@@ -1,10 +1,6 @@
 <?php
 session_start();
 include('../includes/db.php');
-include('../includes/functions.php');
-
-// Check if the user is logged in as a Student
-checkUserRole('Student');
 
 // Get the logged-in user's ID
 $user_id = $_SESSION['user_id'];
@@ -53,39 +49,58 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Profile</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Profile Management</h2>
-        
+    <div class="container mt-5">
+        <h2 class="mb-4">Profile Management</h2>
+
         <?php if ($error): ?>
-            <p class="error"><?php echo $error; ?></p>
+            <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
         
         <?php if ($success): ?>
-            <p class="success"><?php echo $success; ?></p>
+            <div class="alert alert-success"><?php echo $success; ?></div>
         <?php endif; ?>
-        
-        <h3>Profile Details</h3>
-        <p><strong>Username:</strong> <?php echo htmlspecialchars($user['username']); ?></p>
-        <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
 
-        <h3>Change Password</h3>
-        <form action="profile.php" method="POST">
-            <label for="current_password">Current Password:</label>
-            <input type="password" id="current_password" name="current_password" required>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>Profile Details</h3>
+                <p><strong>Username:</strong> <?php echo htmlspecialchars($user['username']); ?></p>
+                <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
+            </div>
+        </div>
 
-            <label for="new_password">New Password:</label>
-            <input type="password" id="new_password" name="new_password" required>
+        <div class="card">
+            <div class="card-body">
+                <h3>Change Password</h3>
+                <form action="profile.php" method="POST">
+                    <div class="mb-3">
+                        <label for="current_password" class="form-label">Current Password:</label>
+                        <input type="password" class="form-control" id="current_password" name="current_password" required>
+                    </div>
 
-            <label for="confirm_password">Confirm New Password:</label>
-            <input type="password" id="confirm_password" name="confirm_password" required>
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">New Password:</label>
+                        <input type="password" class="form-control" id="new_password" name="new_password" required>
+                    </div>
 
-            <button type="submit" name="update_password">Update Password</button>
-        </form>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm New Password:</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
 
-        <a href="../index.php">Back to Dashboard</a>
+                    <button type="submit" class="btn btn-primary" name="update_password">Update Password</button>
+                </form>
+            </div>
+        </div>
+
+        <a href="../index.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
     </div>
+
+    <!-- Bootstrap JS (Optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
