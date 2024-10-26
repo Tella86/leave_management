@@ -51,7 +51,7 @@ $leaves = $query->fetchAll();
     <div class="wrapper">
         <!-- Sidebar -->
         <nav class="sidebar">
-            <h2 class="text-light">Dashboard</h2>
+            <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
             <p class="text-light">Hello, <?php echo htmlspecialchars($_SESSION['username']); ?>!</p>
             <hr class="bg-light">
             <a href="../students/apply_leave.php">Apply for Leave</a>
