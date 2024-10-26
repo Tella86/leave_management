@@ -22,6 +22,7 @@ $success = "";
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
+    $phone = trim($_POST['phone']);
     $password = trim($_POST['password']);
 
     // Validate form input
@@ -185,6 +186,10 @@ $students = $pdo->query("SELECT * FROM users WHERE role = 'Student'")->fetchAll(
                         <div class="mb-3">
                             <label for="email" class="form-label">Email:</label>
                             <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone:</label>
+                            <input type="phone" id="phone" name="phone" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password:</label>

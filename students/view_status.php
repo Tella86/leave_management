@@ -5,8 +5,10 @@ include('../includes/db.php');
 // Get the logged-in user's ID
 $user_id = $_SESSION['user_id'];
 
-// Fetch leave applications for the logged-in student
-$query = $pdo->prepare("SELECT leave_type, start_date, end_date, status FROM leaves WHERE user_id = ?");
+// Fetch approved leaves for the logged-in student
+$query = $pdo->prepare("SELECT leave_id, leave_type, start_date, end_date, status, checked_out_at, checked_in_at 
+                        FROM leaves 
+                        WHERE user_id = ? AND status = 'Approved'");
 $query->execute([$user_id]);
 $leaves = $query->fetchAll();
 ?>
@@ -66,29 +68,46 @@ $leaves = $query->fetchAll();
                 <h2 class="text-center mb-4">Leave Application Status</h2>
                 
                 <?php if (count($leaves) > 0): ?>
-                    <table class="table table-striped table-bordered">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>Leave Type</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($leaves as $leave): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($leave['leave_type']); ?></td>
-                                    <td><?php echo htmlspecialchars($leave['start_date']); ?></td>
-                                    <td><?php echo htmlspecialchars($leave['end_date']); ?></td>
-                                    <td><?php echo htmlspecialchars($leave['status']); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                <?php else: ?>
-                    <p class="text-muted">No leave applications found.</p>
-                <?php endif; ?>
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Leave Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($leaves as $leave): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($leave['leave_type']); ?></td>
+                            <td><?php echo htmlspecialchars($leave['start_date']); ?></td>
+                            <td><?php echo htmlspecialchars($leave['end_date']); ?></td>
+                            <td><?php echo htmlspecialchars($leave['status']); ?></td>
+                            <td>
+                                <?php if (!$leave['checked_out_at']): ?>
+                                    <form action="process_check.php" method="POST">
+                                        <input type="hidden" name="leave_id" value="<?php echo $leave['leave_id']; ?>">
+                                        <button type="submit" name="action" value="checkout" class="btn btn-primary">Check Out</button>
+                                    </form>
+                                <?php elseif ($leave['checked_out_at'] && !$leave['checked_in_at']): ?>
+                                    <form action="process_check.php" method="POST">
+                                        <input type="hidden" name="leave_id" value="<?php echo $leave['leave_id']; ?>">
+                                        <button type="submit" name="action" value="checkin" class="btn btn-success">Check In</button>
+                                    </form>
+                                <?php else: ?>
+                                    <span class="text-muted">Leave Completed</span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p class="text-muted">No approved leave applications found.</p>
+        <?php endif; ?>
+
 
                 <!-- <a href="../index.php" class="btn btn-secondary mt-3">Back to Dashboard</a> -->
             </div>

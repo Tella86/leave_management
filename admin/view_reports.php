@@ -26,28 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Build the query with filters
-$query = "SELECT leaves.leave_id, users.username, leaves.leave_type, leaves.start_date, leaves.end_date, leaves.status 
-          FROM leaves 
-          JOIN users ON leaves.user_id = users.user_id
-          WHERE 1 = 1";
-
-$params = [];
-if ($status_filter) {
-    $query .= " AND leaves.status = ?";
-    $params[] = $status_filter;
-}
-if ($start_date) {
-    $query .= " AND leaves.start_date >= ?";
-    $params[] = $start_date;
-}
-if ($end_date) {
-    $query .= " AND leaves.end_date <= ?";
-    $params[] = $end_date;
-}
-
-$stmt = $pdo->prepare($query);
-$stmt->execute($params);
-$leaves = $stmt->fetchAll();
+$query = $pdo->query("SELECT leaves.leave_id, users.username, leaves.leave_type, leaves.start_date, leaves.end_date, leaves.status, leaves.checked_out_at, leaves.checked_in_at 
+                      FROM leaves 
+                      JOIN users ON leaves.user_id = users.user_id");
+$leaves = $query->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -133,6 +115,8 @@ $leaves = $stmt->fetchAll();
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Status</th>
+                        <th>Checked Out</th>
+                        <th>Checked In</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -144,6 +128,8 @@ $leaves = $stmt->fetchAll();
                             <td><?php echo htmlspecialchars($leave['start_date']); ?></td>
                             <td><?php echo htmlspecialchars($leave['end_date']); ?></td>
                             <td><?php echo htmlspecialchars($leave['status']); ?></td>
+                            <td><?php echo $leave['checked_out_at'] ? $leave['checked_out_at'] : 'Not checked out'; ?></td>
+                            <td><?php echo $leave['checked_in_at'] ? $leave['checked_in_at'] : 'Not checked in'; ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
