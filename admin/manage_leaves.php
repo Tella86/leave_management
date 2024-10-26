@@ -31,16 +31,54 @@ $leaves = $pdo->query("SELECT leaves.leave_id, users.username, leaves.leave_type
                        WHERE leaves.status = 'Pending'")
                        ->fetchAll();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Leave Applications</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Manage Students</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .wrapper {
+            display: flex;
+            width: 100%;
+        }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #343a40;
+            padding: 20px;
+        }
+        .sidebar a {
+            color: white;
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <h2 class="text-light">Admin Panel</h2>
+            <p class="text-light">Hello, Admin!</p>
+            <hr class="bg-light">
+            <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
+            <a href="manage_students.php">Manage Students</a>
+            <a href="manage_departments.php">Manage Departments</a>
+            <a href="manage_leaves.php">Manage Leave Applications</a>
+            <a href="view_reports.php">View Leave Reports</a>
+            <a href="../logout.php" class="mt-3 btn btn-danger">Logout</a>
+        </nav>
     <div class="container mt-4">
         <h2 class="text-center mb-4">Manage Leave Applications</h2>
 
