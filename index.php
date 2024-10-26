@@ -32,8 +32,8 @@ $user = $query->fetch();
 
         <nav class="text-center my-4">
             <?php if ($user['role'] == 'Student'): ?>
-                <a href="student/apply_leave.php" class="btn btn-primary mx-2">Apply for Leave</a>
-                <a href="student/view_status.php" class="btn btn-info mx-2">View Leave Status</a>
+                <a href="students/apply_leave.php" class="btn btn-primary mx-2">Apply for Leave</a>
+                <a href="students/view_status.php" class="btn btn-info mx-2">View Leave Status</a>
             <?php elseif ($user['role'] == 'Admin'): ?>
                 <a href="admin/manage_departments.php" class="btn btn-primary mx-2">Manage Departments</a>
                 <a href="admin/manage_students.php" class="btn btn-info mx-2">Manage Students</a>

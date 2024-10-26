@@ -1,10 +1,10 @@
 <?php
 session_start();
 include('../includes/db.php');
-include('../includes/functions.php');
+// include('../includes/functions.php');
 
 // Check if the user is logged in as an Admin
-checkUserRole('Admin');
+// checkUserRole('Admin');
 
 // Initialize variables for filters and messages
 $error = "";
@@ -50,35 +50,38 @@ $leaves = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leave Reports</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Leave Reports</h2>
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Leave Reports</h2>
 
         <h3>Filter Leave Reports</h3>
-        <form action="view_reports.php" method="POST">
-            <label for="status">Status:</label>
-            <select id="status" name="status">
-                <option value="">All</option>
-                <option value="Pending" <?php if ($status_filter == 'Pending') echo 'selected'; ?>>Pending</option>
-                <option value="Approved" <?php if ($status_filter == 'Approved') echo 'selected'; ?>>Approved</option>
-                <option value="Rejected" <?php if ($status_filter == 'Rejected') echo 'selected'; ?>>Rejected</option>
-            </select>
-
-            <label for="start_date">Start Date:</label>
-            <input type="date" id="start_date" name="start_date" value="<?php echo htmlspecialchars($start_date); ?>">
-
-            <label for="end_date">End Date:</label>
-            <input type="date" id="end_date" name="end_date" value="<?php echo htmlspecialchars($end_date); ?>">
-
-            <button type="submit">Filter</button>
+        <form action="view_reports.php" method="POST" class="form-inline mb-4">
+            <div class="form-group mr-2">
+                <label for="status" class="mr-2">Status:</label>
+                <select id="status" name="status" class="form-control">
+                    <option value="">All</option>
+                    <option value="Pending" <?php if ($status_filter == 'Pending') echo 'selected'; ?>>Pending</option>
+                    <option value="Approved" <?php if ($status_filter == 'Approved') echo 'selected'; ?>>Approved</option>
+                    <option value="Rejected" <?php if ($status_filter == 'Rejected') echo 'selected'; ?>>Rejected</option>
+                </select>
+            </div>
+            <div class="form-group mr-2">
+                <label for="start_date" class="mr-2">Start Date:</label>
+                <input type="date" id="start_date" name="start_date" class="form-control" value="<?php echo htmlspecialchars($start_date); ?>">
+            </div>
+            <div class="form-group mr-2">
+                <label for="end_date" class="mr-2">End Date:</label>
+                <input type="date" id="end_date" name="end_date" class="form-control" value="<?php echo htmlspecialchars($end_date); ?>">
+            </div>
+            <button type="submit" class="btn btn-primary">Filter</button>
         </form>
 
         <h3>Leave Applications Report</h3>
         <?php if (count($leaves) > 0): ?>
-            <table>
-                <thead>
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
                     <tr>
                         <th>Leave ID</th>
                         <th>Student Name</th>
@@ -102,10 +105,15 @@ $leaves = $stmt->fetchAll();
                 </tbody>
             </table>
         <?php else: ?>
-            <p>No leave applications found for the selected filters.</p>
+            <p class="text-muted">No leave applications found for the selected filters.</p>
         <?php endif; ?>
 
-        <a href="../index.php">Back to Dashboard</a>
+        <a href="../index.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
     </div>
+
+    <!-- Optional JavaScript for Bootstrap functionality -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
