@@ -10,9 +10,23 @@ if (!isset($_SESSION['user_id'])) {
 
 // Fetch user information
 $user_id = $_SESSION['user_id'];
-$query = $pdo->prepare("SELECT username, role FROM users WHERE user_id = ?");
+$query = $pdo->prepare("SELECT username, role, dashboard_color FROM users WHERE user_id = ?");
 $query->execute([$user_id]);
 $user = $query->fetch();
+
+// Update color if the form is submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['dashboard_color'])) {
+    $new_color = $_POST['dashboard_color'];
+
+    // Update the user's preferred dashboard color in the database
+    $update_query = $pdo->prepare("UPDATE users SET dashboard_color = ? WHERE user_id = ?");
+    $update_query->execute([$new_color, $user_id]);
+
+    // Update the color in the user array
+    $user['dashboard_color'] = $new_color;
+}
+
+$dashboard_color = $user['dashboard_color'] ?: '#343a40';
 ?>
 
 <!DOCTYPE html>
@@ -22,6 +36,7 @@ $user = $query->fetch();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online Leave Management System</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="assets/css/styles.css">
     <style>
         /* Custom styles for sidebar layout */
@@ -32,7 +47,7 @@ $user = $query->fetch();
         .sidebar {
             width: 250px;
             height: 100vh;
-            background-color: #343a40;
+            background-color: <?php echo htmlspecialchars($dashboard_color); ?>;
             padding: 20px;
         }
         .sidebar a {
@@ -48,6 +63,12 @@ $user = $query->fetch();
         .content {
             flex-grow: 1;
             padding: 20px;
+        }
+        .settings-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -80,6 +101,34 @@ $user = $query->fetch();
         <!-- Main Content -->
         <div class="content">
             <h1>Welcome to the Online Leave Management System</h1>
+
+            <!-- Settings Icon -->
+            <!-- Using Bootstrap Icon for Settings -->
+<i class="bi bi-gear settings-icon" data-toggle="modal" data-target="#settingsModal" style="font-size: 24px; cursor: pointer;"></i>
+
+
+            <!-- Settings Modal -->
+            <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="settingsModalLabel">Dashboard Settings</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="" method="POST">
+                                <div class="form-group">
+                                    <label for="dashboard_color">Change Dashboard Color:</label>
+                                    <input type="color" name="dashboard_color" id="dashboard_color" value="<?php echo htmlspecialchars($dashboard_color); ?>" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Summary Cards -->
             <div class="row">

@@ -27,7 +27,7 @@ if ($action === 'checkout' && !$leave['checked_out_at']) {
 
     // Send SMS notification to parent
     if (!empty($leave['parent_phone'])) {
-        $message = "Dear Parent, your child has checked out of the college.";
+        $message = "Dear Parent, your child has checked out of the college. Shanzu TTC.";
         sendSMS($leave['parent_phone'], $message);
     }
 
@@ -42,7 +42,7 @@ if ($action === 'checkout' && !$leave['checked_out_at']) {
 
     // Send SMS notification to parent
     if (!empty($leave['parent_phone'])) {
-        $message = "Dear Parent, your child has checked back into the college.";
+        $message = "Dear Parent, your child has checked back into the college. Shanzu TTC";
         sendSMS($leave['parent_phone'], $message);
     }
 
