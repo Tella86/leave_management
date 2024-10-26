@@ -1,0 +1,22 @@
+leave_management/
+├── css/
+│   └── styles.css
+├── js/
+│   └── scripts.js
+├── includes/
+│   └── db.php
+│   └── functions.php
+├── student/
+│   └── apply_leave.php
+│   └── view_status.php
+├── admin/
+│   └── manage_departments.php
+│   └── manage_students.php
+│   └── manage_leaves.php
+│   └── view_reports.php
+├── owner/
+│   └── view_status.php
+│   └── approve_leave.php
+├── index.php
+├── login.php
+└── register.php
