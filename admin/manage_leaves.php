@@ -1,12 +1,17 @@
 <?php
 session_start();
 include('../includes/db.php');
-// include('../includes/functions.php');
 
-// Check if the user is logged in as an Admin
-// checkUserRole('Admin');
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit();
+}
 
-// Initialize success and error messages
+// Fetch user information
+$user_id = $_SESSION['user_id'];
+$query = $pdo->prepare("SELECT username, role FROM users WHERE user_id = ?");
+$query->execute([$user_id]);
+$user = $query->fetch();
 $success = "";
 $error = "";
 
@@ -68,11 +73,11 @@ $leaves = $pdo->query("SELECT leaves.leave_id, users.username, leaves.leave_type
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
-        <nav class="sidebar">
-            <h2 class="text-light">Admin Panel</h2>
-            <p class="text-light">Hello, Admin!</p>
-            <hr class="bg-light">
+        <nav class="sidebar">                
             <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
+            <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
+            <p class="text-light">Role: <?php echo htmlspecialchars($user['role']); ?></p>
+            <hr class="bg-light">
             <a href="manage_students.php">Manage Students</a>
             <a href="manage_departments.php">Manage Departments</a>
             <a href="manage_leaves.php">Manage Leave Applications</a>

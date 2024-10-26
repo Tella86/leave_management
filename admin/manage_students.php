@@ -2,6 +2,18 @@
 session_start();
 include('../includes/db.php');
 
+// Check if the user is logged in; if not, redirect to login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit();
+}
+
+// Fetch user information
+$user_id = $_SESSION['user_id'];
+$query = $pdo->prepare("SELECT username, role FROM users WHERE user_id = ?");
+$query->execute([$user_id]);
+$user = $query->fetch();
+
 // Initialize messages
 $error = "";
 $success = "";
@@ -92,10 +104,11 @@ $students = $pdo->query("SELECT * FROM users WHERE role = 'Student'")->fetchAll(
     <div class="wrapper">
         <!-- Sidebar -->
         <nav class="sidebar">
-            <h2 class="text-light">Admin Panel</h2>
-            <p class="text-light">Hello, Admin!</p>
-            <hr class="bg-light">
             <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
+            <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
+            <p class="text-light">Role: <?php echo htmlspecialchars($user['role']); ?></p>
+            <hr class="bg-light">
+            <hr class="bg-light">
             <a href="manage_students.php">Manage Students</a>
             <a href="manage_departments.php">Manage Departments</a>
             <a href="manage_leaves.php">Manage Leave Applications</a>
