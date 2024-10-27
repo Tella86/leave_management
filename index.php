@@ -87,12 +87,19 @@ $dashboard_color = $user['dashboard_color'] ?: '#343a40';
                 <a href="students/profile.php">Profile</a>
             <?php elseif ($user['role'] == 'Admin'): ?>
                 <a href="admin/manage_departments.php">Manage Departments</a>
+                <a href="admin/register.php">Register</a>
                 <a href="admin/manage_students.php">Manage Students</a>
                 <a href="admin/manage_leaves.php">Manage Leave Applications</a>
                 <a href="admin/view_reports.php">View Leave Reports</a>
+                <a href="admin/leave_countdown.php">Leave Countdown</a>
             <?php elseif ($user['role'] == 'Owner'): ?>
                 <a href="owner/view_status.php">View Leave Status</a>
                 <a href="owner/approve_leave.php">Approve/Reject Leaves</a>
+            <?php elseif ($user['role'] == 'Security'): ?>
+                <a href="security/process_gateman_checkout.php">View Checked-Out Students</a>
+                <a href="security/student_list.php">Check Out/In Student</a>
+                <a href="security/student_list.php">View Student</a>
+                <a href="security/view_status.php">View Status</a>
             <?php endif; ?>
 
             <a href="logout.php" class="mt-3 btn btn-danger">Logout</a>
@@ -103,9 +110,7 @@ $dashboard_color = $user['dashboard_color'] ?: '#343a40';
             <h1>Welcome to the Online Leave Management System</h1>
 
             <!-- Settings Icon -->
-            <!-- Using Bootstrap Icon for Settings -->
-<i class="bi bi-gear settings-icon" data-toggle="modal" data-target="#settingsModal" style="font-size: 24px; cursor: pointer;"></i>
-
+            <i class="bi bi-gear settings-icon" data-toggle="modal" data-target="#settingsModal" style="font-size: 24px; cursor: pointer;"></i>
 
             <!-- Settings Modal -->
             <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
@@ -204,6 +209,25 @@ $dashboard_color = $user['dashboard_color'] ?: '#343a40';
                                 <h5 class="card-title">Approve/Reject Leaves</h5>
                                 <p class="card-text">Review and approve or reject leave applications.</p>
                                 <a href="owner/approve_leave.php" class="btn btn-success">Approve/Reject Leaves</a>
+                            </div>
+                        </div>
+                    </div>
+                <?php elseif ($user['role'] == 'Security'): ?>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">View Checked-Out Students</h5>
+                                <p class="card-text">View the list of students who are currently checked out and not yet checked back in.</p>
+                                <a href="security/process_gateman_checkout.php" class="btn btn-primary">View Students</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Check Out/In Student</h5>
+                                <p class="card-text">Check a student out or in at the gate.</p>
+                                <a href="security/student_list.php" class="btn btn-info">Check Out/In</a>
                             </div>
                         </div>
                     </div>

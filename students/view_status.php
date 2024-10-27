@@ -3,7 +3,7 @@ session_start();
 include('../includes/db.php');
 
 // Get the logged-in user's ID
-$user_id = $_SESSION['user_id'];
+
 
 // Fetch approved leaves for the logged-in student
 $query = $pdo->prepare("SELECT leave_id, leave_type, start_date, end_date, status, checked_out_at, checked_in_at 

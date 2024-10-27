@@ -109,11 +109,11 @@ $students = $pdo->query("SELECT * FROM users WHERE role = 'Student'")->fetchAll(
             <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
             <p class="text-light">Role: <?php echo htmlspecialchars($user['role']); ?></p>
             <hr class="bg-light">
-            <hr class="bg-light">
             <a href="manage_students.php">Manage Students</a>
             <a href="manage_departments.php">Manage Departments</a>
             <a href="manage_leaves.php">Manage Leave Applications</a>
             <a href="view_reports.php">View Leave Reports</a>
+            <a href="leave_countdown.php">Leave Countdown</a>
             <a href="../logout.php" class="mt-3 btn btn-danger">Logout</a>
         </nav>
 

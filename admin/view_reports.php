@@ -77,6 +77,7 @@ $leaves = $query->fetchAll();
             <a href="manage_departments.php">Manage Departments</a>
             <a href="manage_leaves.php">Manage Leave Applications</a>
             <a href="view_reports.php">View Leave Reports</a>
+            <a href="leave_countdown.php">Leave Countdown</a>
             <a href="../logout.php" class="mt-3 btn btn-danger">Logout</a>
         </nav>
     <div class="container mt-4">
