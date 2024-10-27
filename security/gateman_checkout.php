@@ -57,15 +57,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search || Students</title>
+    <title>Manage Profile</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
     <style>
+        /* Custom styles for sidebar layout */
         .wrapper {
             display: flex;
             width: 100%;
@@ -90,20 +92,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             flex-grow: 1;
             padding: 20px;
         }
+        .profile-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
-<div class="wrapper">
+    <div class="wrapper">
         <!-- Sidebar -->
         <nav class="sidebar">
-            <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
+            <div class="text-center">
+                <?php if (!empty($user['photo'])): ?>
+                    <img src="../uploads/<?php echo htmlspecialchars($user['photo']); ?>" alt="Profile Photo" class="profile-photo">
+                <?php else: ?>
+                    <img src="../assets/default-profile.png" alt="Default Profile Photo" class="profile-photo">
+                <?php endif; ?>
             <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
-            <p class="text-light">Role: <?php echo htmlspecialchars($user['role']); ?></p>
+            <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
+            </div>
             <hr class="bg-light">
             <a href="process_gateman_checkout.php">View Checked-Out Students</a>
             <a href="student_list.php">Check Out/In Student</a>
             <a href="student_list.php">View Student</a>
             <a href="view_status.php">View Status</a>
+            <a href="profile.php">Profile</a>
             <a href="../logout.php" class="mt-3 btn btn-danger">Logout</a>
         </nav>
     <div class="container mt-5">

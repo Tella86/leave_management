@@ -19,7 +19,7 @@ $error = "";
 $success = "";
 
 // Fetch list of students who have checked out but not checked in
-$query = $pdo->prepare("SELECT leaves.leave_id, leaves.leave_type, leaves.start_date, leaves.end_date, 
+$query = $pdo->prepare("SELECT leaves.leave_id, users.admission_number, leaves.leave_type, leaves.start_date, leaves.end_date, 
                         leaves.checked_out_at, leaves.checked_in_at, users.user_id, users.username, users.phone 
                         FROM leaves 
                         JOIN users ON leaves.user_id = users.user_id 
@@ -33,9 +33,12 @@ $checkedOutStudents = $query->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Students</title>
+    <title>Manage Profile</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
     <style>
+        /* Custom styles for sidebar layout */
         .wrapper {
             display: flex;
             width: 100%;
@@ -60,31 +63,45 @@ $checkedOutStudents = $query->fetchAll();
             flex-grow: 1;
             padding: 20px;
         }
+        .profile-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
-<div class="wrapper">
+    <div class="wrapper">
         <!-- Sidebar -->
         <nav class="sidebar">
-            <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
+            <div class="text-center">
+                <?php if (!empty($user['photo'])): ?>
+                    <img src="../uploads/<?php echo htmlspecialchars($user['photo']); ?>" alt="Profile Photo" class="profile-photo">
+                <?php else: ?>
+                    <img src="../assets/default-profile.png" alt="Default Profile Photo" class="profile-photo">
+                <?php endif; ?>
             <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
-            <p class="text-light">Role: <?php echo htmlspecialchars($user['role']); ?></p>
+            <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
+            </div>
             <hr class="bg-light">
             <a href="process_gateman_checkout.php">View Checked-Out Students</a>
             <a href="student_list.php">Check Out/In Student</a>
             <a href="student_list.php">View Student</a>
             <a href="view_status.php">View Status</a>
+            <a href="profile.php">Profile</a>
             <a href="../logout.php" class="mt-3 btn btn-danger">Logout</a>
         </nav>
     <div class="container mt-5">
-        <h2 class="text-center">Gateman Dashboard</h2>
+        <h2 class="text-center">Security Dashboard</h2>
         <h3>Students Currently Checked Out</h3>
 
         <?php if (count($checkedOutStudents) > 0): ?>
             <table class="table table-striped table-bordered">
                 <thead class="thead-dark">
                     <tr>
-                        <th>Student ID</th>
+                        <th>Admin No.</th>
                         <th>Name</th>
                         <th>Phone</th>
                         <th>Leave Type</th>
@@ -97,7 +114,7 @@ $checkedOutStudents = $query->fetchAll();
                 <tbody>
                     <?php foreach ($checkedOutStudents as $student): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($student['user_id']); ?></td>
+                            <td><?php echo htmlspecialchars($student['admission_number']); ?></td>
                             <td><?php echo htmlspecialchars($student['username']); ?></td>
                             <td><?php echo htmlspecialchars($student['phone']); ?></td>
                             <td><?php echo htmlspecialchars($student['leave_type']); ?></td>

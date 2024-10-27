@@ -101,9 +101,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
             </div>
             <hr class="bg-light">
-            <a href="../students/apply_leave.php">Apply for Leave</a>
-            <a href="../students/view_status.php">View Leave Status</a>
-            <a href="../students/profile.php">Profile</a>
+            <a href="process_gateman_checkout.php">View Checked-Out Students</a>
+            <a href="student_list.php">Check Out/In Student</a>
+            <a href="student_list.php">View Student</a>
+            <a href="view_status.php">View Status</a>
+            <a href="profile.php">Profile</a>
             <a href="../logout.php" class="mt-3 btn btn-danger">Logout</a>
         </nav>
 

@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 // Fetch user information
 $user_id = $_SESSION['user_id'];
-$query = $pdo->prepare("SELECT username, role, dashboard_color FROM users WHERE user_id = ?");
+$query = $pdo->prepare("SELECT username, email, admission_number, photo, role, dashboard_color FROM users WHERE user_id = ?");
 $query->execute([$user_id]);
 $user = $query->fetch();
 
@@ -70,17 +70,28 @@ $dashboard_color = $user['dashboard_color'] ?: '#343a40';
             right: 20px;
             cursor: pointer;
         }
+        .profile-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
         <nav class="sidebar">
-            <h2 class="text-light">Dashboard</h2>
+        <div class="text-center">
+                <?php if (!empty($user['photo'])): ?>
+                    <img src="uploads/<?php echo htmlspecialchars($user['photo']); ?>" alt="Profile Photo" class="profile-photo">
+                <?php else: ?>
+                    <img src="assets/default-profile.png" alt="Default Profile Photo" class="profile-photo">
+                <?php endif; ?>
             <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
-            <p class="text-light">Role: <?php echo htmlspecialchars($user['role']); ?></p>
+            </div>
             <hr class="bg-light">
-
             <?php if ($user['role'] == 'Student'): ?>
                 <a href="students/apply_leave.php">Apply for Leave</a>
                 <a href="students/view_status.php">View Leave Status</a>
@@ -88,18 +99,22 @@ $dashboard_color = $user['dashboard_color'] ?: '#343a40';
             <?php elseif ($user['role'] == 'Admin'): ?>
                 <a href="admin/manage_departments.php">Manage Departments</a>
                 <a href="admin/register.php">Register</a>
+                <a href="admin/manage_users.php">Manage Users</a>
                 <a href="admin/manage_students.php">Manage Students</a>
                 <a href="admin/manage_leaves.php">Manage Leave Applications</a>
                 <a href="admin/view_reports.php">View Leave Reports</a>
                 <a href="admin/leave_countdown.php">Leave Countdown</a>
+                <a href="admin/profile.php">Profile</a>
             <?php elseif ($user['role'] == 'Owner'): ?>
                 <a href="owner/view_status.php">View Leave Status</a>
                 <a href="owner/approve_leave.php">Approve/Reject Leaves</a>
+                <a href="owner/profile.php">Profile</a>
             <?php elseif ($user['role'] == 'Security'): ?>
                 <a href="security/process_gateman_checkout.php">View Checked-Out Students</a>
                 <a href="security/student_list.php">Check Out/In Student</a>
                 <a href="security/student_list.php">View Student</a>
                 <a href="security/view_status.php">View Status</a>
+                <a href="security/profile.php">Profile</a>
             <?php endif; ?>
 
             <a href="logout.php" class="mt-3 btn btn-danger">Logout</a>
@@ -107,7 +122,7 @@ $dashboard_color = $user['dashboard_color'] ?: '#343a40';
 
         <!-- Main Content -->
         <div class="content">
-            <h1>Welcome to the Online Leave Management System</h1>
+            <h1>Shanzu TTC Student Leave-Out Portal</h1>
 
             <!-- Settings Icon -->
             <i class="bi bi-gear settings-icon" data-toggle="modal" data-target="#settingsModal" style="font-size: 24px; cursor: pointer;"></i>

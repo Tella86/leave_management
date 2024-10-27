@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 
 // Fetch user information
 $user_id = $_SESSION['user_id'];
-$query = $pdo->prepare("SELECT username, role FROM users WHERE user_id = ?");
+$query = $pdo->prepare("SELECT username, email, admission_number, photo, role FROM users WHERE user_id = ?");
 $query->execute([$user_id]);
 $user = $query->fetch();
 
@@ -84,21 +84,36 @@ $departments = $pdo->query("SELECT * FROM departments")->fetchAll();
             flex-grow: 1;
             padding: 20px;
         }
+        .profile-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
         <nav class="sidebar">
-            <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
+            <div class="text-center">
+                <?php if (!empty($user['photo'])): ?>
+                    <img src="../uploads/<?php echo htmlspecialchars($user['photo']); ?>" alt="Profile Photo" class="profile-photo">
+                <?php else: ?>
+                    <img src="../assets/default-profile.png" alt="Default Profile Photo" class="profile-photo">
+                <?php endif; ?>
             <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
-            <p class="text-light">Role: <?php echo htmlspecialchars($user['role']); ?></p>
-            <hr class="bg-light">
-            <a href="manage_students.php">Manage Students</a>
+            <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
+            </div>
             <a href="manage_departments.php">Manage Departments</a>
+            <a href="register.php">Register</a>
+            <a href="manage_users.php">Manage Users</a>
+            <a href="manage_students.php">Manage Students</a>
             <a href="manage_leaves.php">Manage Leave Applications</a>
             <a href="view_reports.php">View Leave Reports</a>
             <a href="leave_countdown.php">Leave Countdown</a>
+            <a href="profile.php">Profile</a>
             <a href="../logout.php" class="mt-3 btn btn-danger">Logout</a>
         </nav>
 
