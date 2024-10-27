@@ -3,7 +3,7 @@ session_start();
 include('../includes/db.php');
 
 // Get the logged-in user's ID
-
+$user_id = $_SESSION['user_id'];
 
 // Fetch approved leaves for the logged-in student
 $query = $pdo->prepare("SELECT leave_id, leave_type, start_date, end_date, status, checked_out_at, checked_in_at 
@@ -89,14 +89,14 @@ $leaves = $query->fetchAll();
                                 <?php if (!$leave['checked_out_at']): ?>
                                     <form action="process_check.php" method="POST">
                                         <input type="hidden" name="leave_id" value="<?php echo $leave['leave_id']; ?>">
-                                        <button type="submit" name="action" value="checkout" class="btn btn-primary">Check Out</button>
+                                        <!-- <button type="submit" name="action" value="checkout" class="btn btn-primary"></button> -->
                                     </form>
                                 <?php elseif ($leave['checked_out_at'] && !$leave['checked_in_at']): ?>
                                     <form action="process_check.php" method="POST">
                                         <input type="hidden" name="leave_id" value="<?php echo $leave['leave_id']; ?>">
-                                        <button type="submit" name="action" value="checkin" class="btn btn-success">Check In</button>
+                                        <!-- <button type="submit" name="action" value="checkin" class="btn btn-success"></button> -->
                                     </form>
-                                <?php else: ?>
+                                <?php else: ?> 
                                     <span class="text-muted">Leave Completed</span>
                                 <?php endif; ?>
                             </td>

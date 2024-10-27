@@ -2,6 +2,11 @@
 session_start();
 include('../includes/db.php');
 
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit();
+}
+
 // Get the logged-in user's ID
 $user_id = $_SESSION['user_id'];
 
@@ -10,14 +15,10 @@ $query = $pdo->prepare("SELECT username, role FROM users WHERE user_id = ?");
 $query->execute([$user_id]);
 $user = $query->fetch();
 
-// Initialize messages
-$error = "";
-$success = "";
-
-// Fetch all approved leaves
+// Fetch approved leaves that are either not checked out or checked out but not checked in
 $query = $pdo->prepare("SELECT leave_id, leave_type, start_date, end_date, status, checked_out_at, checked_in_at 
                         FROM leaves 
-                        WHERE status = 'Approved'");
+                        WHERE status = 'Approved' AND (checked_out_at IS NULL OR checked_in_at IS NULL)");
 $query->execute();
 $leaves = $query->fetchAll();
 ?>
@@ -73,10 +74,11 @@ $leaves = $query->fetchAll();
             <a href="../logout.php" class="mt-3 btn btn-danger">Logout</a>
         </nav>
 
+
         <!-- Main Content -->
         <div class="content">
             <div class="container mt-5">
-                <h2 class="text-center mb-4">Approved Leave Applications</h2>
+                <h2 class="text-center mb-4">Manage Leave Check-Out/Check-In</h2>
                 
                 <?php if (count($leaves) > 0): ?>
                     <table class="table table-striped table-bordered">
@@ -98,12 +100,14 @@ $leaves = $query->fetchAll();
                                     <td><?php echo htmlspecialchars($leave['status']); ?></td>
                                     <td>
                                         <?php if (!$leave['checked_out_at']): ?>
-                                            <form action="process_check.php" method="POST">
+                                            <!-- Check Out button -->
+                                            <form action="process_gate_check.php" method="POST">
                                                 <input type="hidden" name="leave_id" value="<?php echo $leave['leave_id']; ?>">
                                                 <button type="submit" name="action" value="checkout" class="btn btn-primary">Check Out</button>
                                             </form>
                                         <?php elseif ($leave['checked_out_at'] && !$leave['checked_in_at']): ?>
-                                            <form action="process_check.php" method="POST">
+                                            <!-- Check In button -->
+                                            <form action="process_gate_check.php" method="POST">
                                                 <input type="hidden" name="leave_id" value="<?php echo $leave['leave_id']; ?>">
                                                 <button type="submit" name="action" value="checkin" class="btn btn-success">Check In</button>
                                             </form>
@@ -116,7 +120,7 @@ $leaves = $query->fetchAll();
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p class="text-muted">No approved leave applications found.</p>
+                    <p class="text-muted">No pending check-out or check-in applications found.</p>
                 <?php endif; ?>
             </div>
         </div>
