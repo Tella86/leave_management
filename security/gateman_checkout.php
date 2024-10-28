@@ -4,6 +4,7 @@ include('../includes/db.php');
 // include('../includes/functions.php'); // For checkUserRole function
 include('../students/sendSMS.php'); // Ensure sendSMS function is included here
 
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
     exit();

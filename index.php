@@ -14,6 +14,10 @@ $query = $pdo->prepare("SELECT username, email, admission_number, photo, role, d
 $query->execute([$user_id]);
 $user = $query->fetch();
 
+// Fetch the initial count of pending leave applications
+$query = $pdo->query("SELECT COUNT(*) AS pending_count FROM leaves WHERE status = 'Pending'");
+$initialPendingCount = $query->fetchColumn();
+
 // Update color if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['dashboard_color'])) {
     $new_color = $_POST['dashboard_color'];
@@ -31,104 +35,103 @@ $dashboard_color = $user['dashboard_color'] ?: '#343a40';
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Leave Management System</title>
+    <title>shanzu ttc Portal</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/ezems.css">
     <style>
-        /* Custom styles for sidebar layout */
-        .wrapper {
-            display: flex;
-            width: 100%;
+    @keyframes flash {
+
+        0%,
+        100% {
+            opacity: 1;
         }
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background-color: <?php echo htmlspecialchars($dashboard_color); ?>;
-            padding: 20px;
+
+        50% {
+            opacity: 0;
         }
-        .sidebar a {
-            color: white;
-            display: block;
-            padding: 10px;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background-color: #007bff;
-            color: white;
-        }
-        .content {
-            flex-grow: 1;
-            padding: 20px;
-        }
-        .settings-icon {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-        }
-        .profile-photo {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 10px;
-        }
+    }
+
+    .flashing-badge {
+        animation: flash 1s infinite;
+        /* Flashes every 1 second */
+    }
     </style>
 </head>
+
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
         <nav class="sidebar">
-        <div class="text-center">
+            <div class="text-center">
                 <?php if (!empty($user['photo'])): ?>
-                    <img src="uploads/<?php echo htmlspecialchars($user['photo']); ?>" alt="Profile Photo" class="profile-photo">
+                <img src="uploads/<?php echo htmlspecialchars($user['photo']); ?>" alt="Profile Photo"
+                    class="profile-photo">
                 <?php else: ?>
-                    <img src="assets/default-profile.png" alt="Default Profile Photo" class="profile-photo">
+                <img src="assets/default-profile.png" alt="Default Profile Photo" class="profile-photo">
                 <?php endif; ?>
-            <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
+                <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
             </div>
             <hr class="bg-light">
             <?php if ($user['role'] == 'Student'): ?>
-                <a href="students/apply_leave.php">Apply for Leave</a>
-                <a href="students/view_status.php">View Leave Status</a>
-                <a href="students/profile.php">Profile</a>
+            <a href="students/apply_leave.php">Apply for Leave</a>
+            <a href="students/view_status.php">View Leave Status</a>
+            <a href="students/profile.php">Profile</a>
             <?php elseif ($user['role'] == 'Admin'): ?>
-                <a href="admin/manage_departments.php">Manage Departments</a>
-                <a href="admin/register.php">Register</a>
-                <a href="admin/manage_users.php">Manage Users</a>
-                <a href="admin/manage_students.php">Manage Students</a>
-                <a href="admin/manage_leaves.php">Manage Leave Applications</a>
-                <a href="admin/view_reports.php">View Leave Reports</a>
-                <a href="admin/leave_countdown.php">Leave Countdown</a>
-                <a href="admin/profile.php">Profile</a>
+            <a href="admin/manage_departments.php">Manage Departments</a>
+            <a href="admin/register.php">Register</a>
+            <a href="admin/manage_users.php">Manage Users</a>
+            <a href="admin/manage_students.php">Manage Students</a>
+            <a href="admin/manage_leaves.php">Manage Leave Applications</a>
+            <a href="admin/view_reports.php">View Leave Reports</a>
+            <a href="admin/leave_countdown.php">Leave Countdown</a>
+            <a href="admin/profile.php">Profile</a>
             <?php elseif ($user['role'] == 'Owner'): ?>
-                <a href="owner/view_status.php">View Leave Status</a>
-                <a href="owner/approve_leave.php">Approve/Reject Leaves</a>
-                <a href="owner/profile.php">Profile</a>
+            <a href="owner/view_status.php">View Leave Status</a>
+            <a href="owner/approve_leave.php">Approve/Reject Leaves</a>
+            <a href="owner/leave_countdown.php">Leave Countdown</a>
+            <a href="owner/view_activity.php">View Activity</a>
+            <a href="owner/profile.php">Profile</a>
             <?php elseif ($user['role'] == 'Security'): ?>
-                <a href="security/process_gateman_checkout.php">View Checked-Out Students</a>
-                <a href="security/student_list.php">Check Out/In Student</a>
-                <a href="security/student_list.php">View Student</a>
-                <a href="security/view_status.php">View Status</a>
-                <a href="security/profile.php">Profile</a>
+            <a href="security/process_gateman_checkout.php">View Checked-Out Students</a>
+            <a href="security/student_list.php">Check Out/In Student</a>
+            <a href="security/student_list.php">View Student</a>
+            <a href="security/view_status.php">View Status</a>
+            <a href="security/profile.php">Profile</a>
             <?php endif; ?>
-
-            <a href="logout.php" class="mt-3 btn btn-danger">Logout</a>
         </nav>
 
         <!-- Main Content -->
         <div class="content">
-            <h1>Shanzu TTC Student Leave-Out Portal</h1>
+            <h1 style="text-align: center;">Shanzu TTC Student Leave-Out Portal</h1>
+            <!-- Settings Icon -->
+             <!-- Check if the user is an Admin to show the notification bell -->
+             <?php if ($user['role'] == 'Admin'): ?>
+    <!-- Notification Icon -->
+    <div class="position-fixed" style="top: 20px; right: 160px; z-index: 1000;">
+    <a href="admin/manage_leaves.php" class="position-relative">
+        <i class="bi bi-bell" style="font-size: 24px; cursor: pointer;"></i></a>
+        <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger flashing-badge">
+            <?php echo $initialPendingCount; ?>
+        </span>
+    </div>
+<?php endif; ?>
+
+            <a href="logout.php" class="logout-btn btn btn-danger">Logout</a>
 
             <!-- Settings Icon -->
-            <i class="bi bi-gear settings-icon" data-toggle="modal" data-target="#settingsModal" style="font-size: 24px; cursor: pointer;"></i>
+            <i class="bi bi-gear settings-icon" data-toggle="modal" data-target="#settingsModal"
+                style="font-size: 24px; cursor: pointer;"></i>
 
             <!-- Settings Modal -->
-            <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+            <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel"
+                aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -141,7 +144,8 @@ $dashboard_color = $user['dashboard_color'] ?: '#343a40';
                             <form action="" method="POST">
                                 <div class="form-group">
                                     <label for="dashboard_color">Change Dashboard Color:</label>
-                                    <input type="color" name="dashboard_color" id="dashboard_color" value="<?php echo htmlspecialchars($dashboard_color); ?>" class="form-control">
+                                    <input type="color" name="dashboard_color" id="dashboard_color"
+                                        value="<?php echo htmlspecialchars($dashboard_color); ?>" class="form-control">
                                 </div>
                                 <button type="submit" class="btn btn-primary">Save Changes</button>
                             </form>
@@ -153,107 +157,197 @@ $dashboard_color = $user['dashboard_color'] ?: '#343a40';
             <!-- Summary Cards -->
             <div class="row">
                 <?php if ($user['role'] == 'Student'): ?>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Apply for Leave</h5>
-                                <p class="card-text">Submit a new leave application for review.</p>
-                                <a href="students/apply_leave.php" class="btn btn-primary">Apply Now</a>
-                            </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Apply for Leave</h5>
+                            <p class="card-text">Submit a new leave application for review.</p>
+                            <a href="students/apply_leave.php" class="btn btn-primary">Apply Now</a>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">View Leave Status</h5>
-                                <p class="card-text">Check the status of your leave applications.</p>
-                                <a href="students/view_status.php" class="btn btn-info">View Status</a>
-                            </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">View Leave Status</h5>
+                            <p class="card-text">Check the status of your leave applications.</p>
+                            <a href="students/view_status.php" class="btn btn-info">View Status</a>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Profile</h5>
-                                <p class="card-text">Update your profile and account settings.</p>
-                                <a href="students/profile.php" class="btn btn-info">Update Profile</a>
-                            </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Profile</h5>
+                            <p class="card-text">Update your profile and account settings.</p>
+                            <a href="students/profile.php" class="btn btn-info">Update Profile</a>
                         </div>
                     </div>
+                </div>
                 <?php elseif ($user['role'] == 'Admin'): ?>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Manage Departments</h5>
-                                <p class="card-text">Create and manage different departments in the system.</p>
-                                <a href="admin/manage_departments.php" class="btn btn-primary">Manage Departments</a>
-                            </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Manage Departments</h5>
+                            <p class="card-text">Create and manage different departments in the system.</p>
+                            <a href="admin/manage_departments.php" class="btn btn-primary">Manage Departments</a>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Manage Students</h5>
-                                <p class="card-text">View and update student profiles and leave requests.</p>
-                                <a href="admin/manage_students.php" class="btn btn-info">Manage Students</a>
-                            </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Manage Students</h5>
+                            <p class="card-text">View and update student profiles and leave requests.</p>
+                            <a href="admin/manage_students.php" class="btn btn-info">Manage Students</a>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Manage Leave Applications</h5>
-                                <p class="card-text">Review and approve/reject leave applications submitted by students.</p>
-                                <a href="admin/manage_leaves.php" class="btn btn-warning">Manage Leave Applications</a>
-                            </div>
-                        </div>
+                </div>
+          
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Leave Applications</h5>
+                        <p class="card-text">Review and approve/reject leave applications submitted by students.</p>
+                        <a href="admin/manage_leaves.php" class="btn btn-warning position-relative">
+                            Manage Leave Applications
+                        </a>
                     </div>
+                </div>
+            </div>
+       
+    <!-- Notification Audio -->
+    <audio id="notificationSound" src="assets/audio/beep.wav"></audio>
                 <?php elseif ($user['role'] == 'Owner'): ?>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">View Leave Status</h5>
-                                <p class="card-text">View the overall leave status of students and employees.</p>
-                                <a href="owner/view_status.php" class="btn btn-primary">View Status</a>
-                            </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">View Leave Status</h5>
+                            <p class="card-text">View the overall leave status of students and employees.
+                            </p>
+                            <a href="owner/view_status.php" class="btn btn-primary">View Status</a>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Approve/Reject Leaves</h5>
-                                <p class="card-text">Review and approve or reject leave applications.</p>
-                                <a href="owner/approve_leave.php" class="btn btn-success">Approve/Reject Leaves</a>
-                            </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Approve/Reject Leaves</h5>
+                            <p class="card-text">Review and approve or reject leave applications.</p>
+                            <a href="owner/approve_leave.php" class="btn btn-success">Approve/Reject
+                                Leaves</a>
                         </div>
                     </div>
+                </div>
                 <?php elseif ($user['role'] == 'Security'): ?>
-                    <div class="col-md-6">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">View Checked-Out Students</h5>
-                                <p class="card-text">View the list of students who are currently checked out and not yet checked back in.</p>
-                                <a href="security/process_gateman_checkout.php" class="btn btn-primary">View Students</a>
-                            </div>
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">View Checked-Out Students</h5>
+                            <p class="card-text">View the list of students who are currently checked out and
+                                not yet
+                                checked back in.</p>
+                            <a href="security/process_gateman_checkout.php" class="btn btn-primary">View
+                                Students</a>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Check Out/In Student</h5>
-                                <p class="card-text">Check a student out or in at the gate.</p>
-                                <a href="security/student_list.php" class="btn btn-info">Check Out/In</a>
-                            </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Check Out/In Student</h5>
+                            <p class="card-text">Check a student out or in at the gate.</p>
+                            <a href="security/student_list.php" class="btn btn-info">Check Out/In</a>
                         </div>
                     </div>
+                </div>
                 <?php endif; ?>
             </div>
         </div>
     </div>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Request permission for browser notifications
+    if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+
+    // Function to show notification and play sound
+    function showNotification(count) {
+        const notificationSound = document.getElementById("notificationSound");
+        notificationSound.play();
+
+        // Show browser notification
+        if (Notification.permission === "granted") {
+            new Notification("New Leave Application", {
+                body: `There are ${count} pending leave applications awaiting review.`,
+                icon: "assets/icons/notification-icon.png" // Optional icon for the notification
+            });
+        }
+    }
+
+    // Function for long polling to check for pending leaves
+    async function checkPendingLeaves(initialPendingCount) {
+        try {
+            const response = await fetch(`check_pending_leaves.php?initial_count=${initialPendingCount}`);
+            const data = await response.json();
+
+            // Update badge and show notification if there are new pending applications
+            const pendingCount = data.pending_count;
+            const badge = document.getElementById("notificationBadge");
+            badge.textContent = pendingCount;
+
+            if (pendingCount > initialPendingCount) {
+                showNotification(pendingCount);
+            }
+
+            // Restart polling with the latest count
+            checkPendingLeaves(pendingCount);
+        } catch (error) {
+            console.error('Error fetching pending leave count:', error);
+            setTimeout(() => checkPendingLeaves(initialPendingCount), 5000); // Retry after 5 seconds on error
+        }
+    }
+
+    // Start long polling with the initial count
+    checkPendingLeaves(<?php echo $initialPendingCount; ?>);
+});
+const notificationSound = document.getElementById("notificationSound");
+        const notificationBadge = document.getElementById("notificationBadge");
+
+        // Establish WebSocket connection
+        const ws = new WebSocket('ws://localhost:8080/notifications');
+
+        ws.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+
+            // Check for new leave applications
+            if (message.type === 'new_leave') {
+                notificationBadge.textContent = message.count;
+                notificationSound.play();
+                
+                // Optional: Show browser notification
+                if (Notification.permission === "granted") {
+                    new Notification("New Leave Application", {
+                        body: `You have ${message.count} pending leave applications.`,
+                        icon: "assets/icons/notification-icon.png"
+                    });
+                }
+            }
+        };
+
+        // Request notification permissions
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+</script>
 
     <!-- Optional JavaScript for Bootstrap functionality -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>

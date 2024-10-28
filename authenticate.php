@@ -26,6 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
 
+            // Insert a new login activity entry after successful authentication
+            $query = $pdo->prepare("INSERT INTO login_activity (user_id, login_time) VALUES (?, NOW())");
+            $query->execute([$user['user_id']]);
+
+            // Store the login activity ID in the session for tracking
+            $_SESSION['login_activity_id'] = $pdo->lastInsertId();
+
             // Redirect based on role
             header("Location: index.php");
             exit();

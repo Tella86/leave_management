@@ -7,13 +7,20 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
     exit();
 }
+
 // Get the logged-in user's ID
 $user_id = $_SESSION['user_id'];
 
 // Fetch the user's profile data, including photo
-$query = $pdo->prepare("SELECT username, email, admission_number, photo FROM users WHERE user_id = ?");
+$query = $pdo->prepare("SELECT username, email, admission_number, photo, role FROM users WHERE user_id = ?");
 $query->execute([$user_id]);
 $user = $query->fetch();
+
+// Check if the user has the role 'Student'
+if ($user['role'] !== 'Student') {
+    echo "Access denied.";
+    exit();
+}
 
 // Initialize an empty error message
 $error = "";
@@ -24,7 +31,7 @@ $success = "";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Profile</title>
+    <title>Manage Profile and Apply for Leave</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
@@ -73,20 +80,21 @@ $success = "";
                 <?php else: ?>
                     <img src="../assets/default-profile.png" alt="Default Profile Photo" class="profile-photo">
                 <?php endif; ?>
+                <p class="text-light mt-2">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
             </div>
             <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
-            <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
             <hr class="bg-light">
             <a href="../students/apply_leave.php">Apply for Leave</a>
             <a href="../students/view_status.php">View Leave Status</a>
             <a href="../students/profile.php">Profile</a>
             <a href="../logout.php" class="mt-3 btn btn-danger">Logout</a>
         </nav>
+
         <!-- Main Content -->
         <div class="content">
             <div class="container mt-5">
                 <h2 class="text-center mb-4">Apply for Leave</h2>
-                
+                <!-- Leave Application Form -->
                 <form action="submit_leave.php" method="POST" class="bg-light p-4 border rounded">
                     <div class="form-group mb-3">
                         <label for="leave_type">Leave Type:</label>

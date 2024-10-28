@@ -84,62 +84,30 @@ $students = $pdo->query("SELECT * FROM users WHERE role = 'Student'")->fetchAll(
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Students</title>
+    <title>Manage || Students</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-    .wrapper {
-        display: flex;
-        width: 100%;
-    }
-
-    .sidebar {
-        width: 250px;
-        height: 100vh;
-        background-color: #343a40;
-        padding: 20px;
-    }
-
-    .sidebar a {
-        color: white;
-        display: block;
-        padding: 10px;
-        text-decoration: none;
-    }
-
-    .sidebar a:hover {
-        background-color: #007bff;
-        color: white;
-    }
-
-    .content {
-        flex-grow: 1;
-        padding: 20px;
-    }
-    .profile-photo {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/ezems.css">
 </head>
+
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
         <nav class="sidebar">
             <div class="text-center">
                 <?php if (!empty($user['photo'])): ?>
-                    <img src="../uploads/<?php echo htmlspecialchars($user['photo']); ?>" alt="Profile Photo" class="profile-photo">
+                <img src="../uploads/<?php echo htmlspecialchars($user['photo']); ?>" alt="Profile Photo"
+                    class="profile-photo">
                 <?php else: ?>
-                    <img src="../assets/default-profile.png" alt="Default Profile Photo" class="profile-photo">
+                <img src="../assets/default-profile.png" alt="Default Profile Photo" class="profile-photo">
                 <?php endif; ?>
-            <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
-            <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
+                <p class="text-light">Hello, <?php echo htmlspecialchars($user['username']); ?>!</p>
+                <a href="../index.php" class="btn btn-secondary mt-3">Dashboard</a>
             </div>
             <hr class="bg-light">
             <a href="manage_departments.php">Manage Departments</a>
@@ -150,10 +118,42 @@ $students = $pdo->query("SELECT * FROM users WHERE role = 'Student'")->fetchAll(
             <a href="view_reports.php">View Leave Reports</a>
             <a href="leave_countdown.php">Leave Countdown</a>
             <a href="profile.php">Profile</a>
-            <a href="../logout.php" class="mt-3 btn btn-danger">Logout</a>
+            <!-- <a href="../logout.php" class="mt-3 btn btn-danger">Logout</a> -->
         </nav>
+
+        <div class="container mt-5">
+        <h2 class="text-center mb-4">Manage Students</h2>
+ 
+  <!-- Settings Icon -->
+           
+  <a href="logout.php" class="logout-btn btn btn-danger">Logout</a>
+
+<!-- Settings Icon -->
+<i class="bi bi-gear settings-icon" data-toggle="modal" data-target="#settingsModal" style="font-size: 24px; cursor: pointer;"></i>
+
+            <!-- Settings Modal -->
+            <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="settingsModalLabel">Dashboard Settings</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="" method="POST">
+                                <div class="form-group">
+                                    <label for="dashboard_color">Change Dashboard Color:</label>
+                                    <input type="color" name="dashboard_color" id="dashboard_color" value="<?php echo htmlspecialchars($dashboard_color); ?>" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         <div class="container mt-4">
-            <h2 class="text-center mb-4">Manage Students</h2>
 
             <!-- Display success or error message -->
             <?php if ($error): ?>

@@ -32,5 +32,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Failed to submit leave application. Please try again.";
         }
     }
+ 
+// Existing code for leave submission here...
+
+// After a new leave is added to the database, send notification via WebSocket
+$newLeaveMessage = json_encode(['type' => 'new_leave', 'count' => $pendingLeaveCount]);
+
+$socket = fsockopen("localhost", 8080);
+fwrite($socket, $newLeaveMessage);
+fclose($socket);
+
 }
 ?>
