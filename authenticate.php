@@ -48,4 +48,4 @@ if ($error) {
     header("Location: login.php");
     exit();
 }
-?>
+

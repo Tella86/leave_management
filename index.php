@@ -217,7 +217,7 @@ $dashboard_color = $user['dashboard_color'] ?: '#343a40';
             </div>
        
     <!-- Notification Audio -->
-    <audio id="notificationSound" src="assets/audio/beep.wav"></audio>
+    <audio id="notificationSound" src="assets/audio/beep.wav" preload="auto"></audio>
                 <?php elseif ($user['role'] == 'Owner'): ?>
                 <div class="col-md-4">
                     <div class="card mb-4">
@@ -272,82 +272,95 @@ document.addEventListener("DOMContentLoaded", function() {
         Notification.requestPermission();
     }
 
-    // Function to show notification and play sound
-    function showNotification(count) {
+    // Function to play sound and show browser notification
+    function showNotification(title, message, iconPath = "assets/icons/notification-icon.png") {
         const notificationSound = document.getElementById("notificationSound");
         notificationSound.play();
 
-        // Show browser notification
         if (Notification.permission === "granted") {
-            new Notification("New Leave Application", {
-                body: `There are ${count} pending leave applications awaiting review.`,
-                icon: "assets/icons/notification-icon.png" // Optional icon for the notification
+            new Notification(title, {
+                body: message,
+                icon: iconPath
             });
         }
     }
 
+    // Function to update the notification badge
+    function updateBadge(count) {
+        const badge = document.getElementById("notificationBadge");
+        badge.textContent = count;
+        badge.style.display = count > 0 ? "inline" : "none";
+    }
+
     // Function for long polling to check for pending leaves
-    async function checkPendingLeaves(initialPendingCount) {
+    async function checkPendingLeaves(initialPendingCount = 0) {
         try {
             const response = await fetch(`check_pending_leaves.php?initial_count=${initialPendingCount}`);
             const data = await response.json();
 
             // Update badge and show notification if there are new pending applications
             const pendingCount = data.pending_count;
-            const badge = document.getElementById("notificationBadge");
-            badge.textContent = pendingCount;
-
             if (pendingCount > initialPendingCount) {
-                showNotification(pendingCount);
+                showNotification("New Leave Application", `There are ${pendingCount} pending leave applications awaiting review.`);
             }
 
+            // Update the badge
+            updateBadge(pendingCount);
+
             // Restart polling with the latest count
-            checkPendingLeaves(pendingCount);
+            setTimeout(() => checkPendingLeaves(pendingCount), 10000); // Poll every 10 seconds
         } catch (error) {
             console.error('Error fetching pending leave count:', error);
             setTimeout(() => checkPendingLeaves(initialPendingCount), 5000); // Retry after 5 seconds on error
         }
     }
 
-    // Start long polling with the initial count
-    checkPendingLeaves(<?php echo $initialPendingCount; ?>);
-});
-const notificationSound = document.getElementById("notificationSound");
-        const notificationBadge = document.getElementById("notificationBadge");
+    // WebSocket connection to receive real-time notifications
+    function setupWebSocket() {
+        const socket = new WebSocket("ws://localhost:8080/notifications");
+        const badge = document.getElementById("notificationBadge");
 
-        // Establish WebSocket connection
-        const ws = new WebSocket('ws://localhost:8080/notifications');
-
-        ws.onmessage = function(event) {
-            const message = JSON.parse(event.data);
-
-            // Check for new leave applications
-            if (message.type === 'new_leave') {
-                notificationBadge.textContent = message.count;
-                notificationSound.play();
-                
-                // Optional: Show browser notification
-                if (Notification.permission === "granted") {
-                    new Notification("New Leave Application", {
-                        body: `You have ${message.count} pending leave applications.`,
-                        icon: "assets/icons/notification-icon.png"
-                    });
-                }
-            }
+        socket.onopen = () => {
+            console.log("Connected to WebSocket server");
         };
 
-        // Request notification permissions
-        if (Notification.permission !== "granted") {
-            Notification.requestPermission();
-        }
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            // Increment notification count
+            let count = parseInt(badge.innerText) || 0;
+            count++;
+            updateBadge(count);
+
+            // Play notification sound and show browser notification
+            showNotification("New Notification", data.message || "You have a new notification");
+        };
+
+        socket.onclose = () => {
+            console.log("Disconnected from WebSocket server");
+        };
+
+        socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+            socket.close();
+        };
+    }
+
+    // Start long polling for pending leave applications
+    checkPendingLeaves(0); // Start with 0 or your preferred initial count
+
+    // Set up WebSocket connection
+    setupWebSocket();
+});
+
 </script>
 
     <!-- Optional JavaScript for Bootstrap functionality -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
 </body>
 
 </html>
